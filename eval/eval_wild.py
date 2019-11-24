@@ -2,7 +2,7 @@ import numpy as np
 import PIL.Image
 import cv2, pickle, sys, os
 from tqdm import trange
-sys.path.append("../src/")
+sys.path.append("/home/zhangtianyi/github/hmd/src/")
 from predictor import joint_predictor
 from predictor import anchor_predictor
 from data_loader import dataloader_pred
@@ -15,8 +15,10 @@ from utility import center_crop
 from utility import get_anchor_posi
 from utility import get_joint_posi
 
-pdt_j = joint_predictor("../demo/pretrained_model/pretrained_joint.pth")
-pdt_a = anchor_predictor("../demo/pretrained_model/pretrained_anchor.pth")
+# pdt_j = joint_predictor("../demo/pretrained_model/pretrained_joint.pth")
+# pdt_a = anchor_predictor("../demo/pretrained_model/pretrained_anchor.pth")
+pdt_j = joint_predictor("/home/zhangtianyi/github/hmd/model/snapshots_j_2019-11-18-11:03:06/pretrained_joint.pth")
+pdt_a = anchor_predictor("/home/zhangtianyi/github/hmd/model/snapshots_a_2019-11-18-17:46:53/anchor_epoch_0_0.pth")
 
 dataset = dataloader_pred(dataset_path = "./eval_data/wild_set/",
                           train = False, shuffle = False)

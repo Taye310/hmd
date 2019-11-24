@@ -26,7 +26,8 @@ class dataloader_joint(Dataset):
                 ):
         if train is True:
             self.dataset_dir = tgt_path + "train/"
-            self.num = 24149*10 #13938, non dr augment version
+            # self.num = 24149*10 #13938, non dr augment version
+            self.num = 8035*10
         else:
             self.dataset_dir = tgt_path + "test/"
             self.num = 4625*10
@@ -117,6 +118,7 @@ class dataloader_anchor(Dataset):
         if train is True:
             self.dataset_dir = tgt_path + "train/"
             self.num = 24149*200 #13938, non dr augment version
+            self.num = 8035*10
         else:
             self.dataset_dir = tgt_path + "test/"
             self.num = 4625*200

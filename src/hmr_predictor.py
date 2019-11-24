@@ -5,6 +5,7 @@ import tensorflow as tf
 from utility import scale_and_crop
 from utility import shift_verts
 from utility import resize_img
+from utility import get_sil_bbox
 
 # cofigure hmr path
 import configparser

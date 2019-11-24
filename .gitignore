@@ -1,0 +1,10 @@
+*.pyc
+*.png
+*.pth
+*.tar.gz
+*.obj
+*.json
+*.jpg
+*.pkl
+*.zip
+*.txt

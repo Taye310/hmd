@@ -21,7 +21,7 @@ lspet_path = conf.get('DATA', 'lspet_path')
 upi_path = conf.get('DATA', 'upi_path')
 coco_api_path = conf.get('DATA', 'coco_api_path')
 coco_list_path = conf.get('DATA', 'coco_list_path')
-h36m_path = conf.get('DATA', 'h36m_path')
+# h36m_path = conf.get('DATA', 'h36m_path')
 
 c_time = datetime.datetime.now()
 time_string = "%s-%02d:%02d:%02d" % (c_time.date(), c_time.hour, c_time.minute, c_time.second)
@@ -38,19 +38,19 @@ for i in [tgt_path + "train/", tgt_path + "train/img/",
     if not os.path.exists(i):
         os.makedirs(i)
 
-p_train, p_test = proc_lsp(tgt_path + "train/", tgt_path + "test/",
-                                     p_train, p_test,
-                                     lsp_path, upi_path)
+# p_train, p_test = proc_lsp(tgt_path + "train/", tgt_path + "test/",
+#                                      p_train, p_test,
+#                                      lsp_path, upi_path)
 
 p_train = proc_lspet(tgt_path + "train/", p_train,
-                          lspet_path, upi_path)
+                          lspet_path, upi_path) # hmr_pridictor error
 
-p_train, p_test = proc_mpii(tgt_path + "train/", tgt_path + "test/",
-                                      p_train, p_test, upi_path)
+# p_train, p_test = proc_mpii(tgt_path + "train/", tgt_path + "test/",
+#                                       p_train, p_test, upi_path)
 
-p_train, p_test = proc_coco(tgt_path + "train/", tgt_path + "test/",
-                                      p_train, p_test, coco_list_path)
+# p_train, p_test = proc_coco(tgt_path + "train/", tgt_path + "test/",
+#                                       p_train, p_test, coco_list_path) # hmr_pridictor error // coco need network
 
-p_train, p_test = proc_h36m(tgt_path + "train/", tgt_path + "test/",
-                                      p_train, p_test, h36m_path)
+# p_train, p_test = proc_h36m(tgt_path + "train/", tgt_path + "test/",  # no dataset
+#                                       p_train, p_test, h36m_path)
 print("All done")
