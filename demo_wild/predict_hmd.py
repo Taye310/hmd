@@ -210,12 +210,12 @@ device = torch.device("cuda:0" if opt.gpu else "cpu")
 
 net_shading = shading_net(init_weights = True).eval().to(device)
 if opt.gpu is True:
-    net_shading.load_state_dict(torch.load(shading_model, map_location='cuda:0'))
+    net_shading.load_state_dict(torch.load(shading_model, map_location='cuda:0')) # load pretrained model
 else:
     net_shading.load_state_dict(torch.load(shading_model, map_location='cpu'))
     
 faces_smpl = np.load("../predef/smpl_faces.npy")
-mesh = make_trimesh(sa_verts, faces_smpl)
+mesh = make_trimesh(sa_verts, faces_smpl) # mesh after adjust joint and anchor
 
 proj_sil = my_renderer.silhouette(verts = mesh.points())
 
@@ -230,6 +230,13 @@ input_arr = np.expand_dims(input_arr, 0)
 input_arr = torch.tensor(input_arr).float().to(device)
 input_arr = input_arr/255.0
 
+# # src is the rgb std image, sil is sil
+# from matplotlib import pyplot as plt
+# plt.imshow(src_img_l)
+# plt.show()
+# plt.imshow(proj_sil_l)
+# plt.show()
+
 proj_sil_l = np.expand_dims(proj_sil_l, 0)
 proj_sil_l = np.expand_dims(proj_sil_l, 0)
 proj_sil_l = torch.tensor(proj_sil_l)
@@ -238,6 +245,9 @@ proj_sil_l = proj_sil_l.float().to(device)
 # predict
 pred = net_shading(input_arr, proj_sil_l)
 pred_depth = np.array(pred.data[0][0].cpu())
+from matplotlib import pyplot as plt ### have not tried yet, should be the predict dm, using to make gt depth map
+plt.imshow(pred_depth)
+plt.show()
 
 # flatten naval
 mesh = flatten_naval(mesh)
@@ -276,8 +286,20 @@ final_mask[sil_img==0] = 0
 
 pred_depth = pred_depth * final_mask
 
+# print('pred_depth shape:')
+# print(pred_depth.shape)
+from matplotlib import pyplot as plt
+plt.imshow(final_mask)
+plt.show()
+
 # project mesh to depth and merge with depth difference
-proj_depth, visi_map = rd.render_depth(subdiv_mesh, require_visi = True)
+proj_depth, visi_map = rd.render_depth(subdiv_mesh, require_visi = True) # mesh to depth map//proj_depth/visi_map shape = (448,448)
+
+# print('proj_depth:')
+# print(proj_depth)
+# depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(proj_depth),cv2.COLORMAP_JET)
+# cv2.imshow('depth_colormap',depth_colormap)
+# cv2.waitKey(0)
 
 # get all visible vertex index
 verts_sd = subdiv_mesh.points()
@@ -299,6 +321,7 @@ visi_vert_inds = set(visi_vert_inds)
 visi_vert_inds = list(set(visi_vert_inds).difference(exempt_vert_list))
 
 visi_vert_inds_m = []
+final_depth = np.zeros(shape=(448,448))
 for i in visi_vert_inds:
     xy = cam_para.project(verts_sd[i])
     x = int(round(xy[1]))
@@ -311,12 +334,19 @@ for i in visi_vert_inds_m:
     x = int(round(xy[1]))
     y = int(round(xy[0]))
     depth = proj_depth[x, y] + pred_depth[x, y]*0.002
-    #print(depth, verts_sd[i])
+    final_depth[x, y] = proj_depth[x, y] + pred_depth[x, y]*0.002
+    # print(proj_depth.shape,x,y)
     if depth>10.:
         continue
     verts_sd[i][2] = depth
 
 deformed_mesh = make_trimesh(verts_sd, faces_sd)
+
+# print('verts_sd shape:')
+# print(verts_sd.shape)
+# from matplotlib import pyplot as plt
+# plt.imshow(final_depth)
+# plt.show()
 
 print("done")
 

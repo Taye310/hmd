@@ -42,14 +42,14 @@ for i in [tgt_path + "train/", tgt_path + "train/img/",
 #                                      p_train, p_test,
 #                                      lsp_path, upi_path)
 
-p_train = proc_lspet(tgt_path + "train/", p_train,
-                          lspet_path, upi_path) # hmr_pridictor error
+# p_train = proc_lspet(tgt_path + "train/", p_train,
+#                           lspet_path, upi_path) # hmr_pridictor error
 
 # p_train, p_test = proc_mpii(tgt_path + "train/", tgt_path + "test/",
 #                                       p_train, p_test, upi_path)
 
-# p_train, p_test = proc_coco(tgt_path + "train/", tgt_path + "test/",
-#                                       p_train, p_test, coco_list_path) # hmr_pridictor error // coco need network
+p_train, p_test = proc_coco(tgt_path + "train/", tgt_path + "test/",
+                                      p_train, p_test, coco_list_path) # hmr_pridictor error // coco need network
 
 # p_train, p_test = proc_h36m(tgt_path + "train/", tgt_path + "test/",  # no dataset
 #                                       p_train, p_test, h36m_path)
