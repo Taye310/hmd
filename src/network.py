@@ -347,6 +347,7 @@ class shading_net(nn.Module):
         self.decf = nn.Sequential(nn.ConvTranspose2d(16,1,3,1,1))
         
     def forward(self, x, mask):
+        print(x.shape)
         e1 = self.enc1(x) #16x224x224
         e2 = self.enc2(e1) #32x112x112
         e3 = self.enc3(e2) #64x56x56

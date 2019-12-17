@@ -6,6 +6,8 @@ import json
 import pickle
 import torchvision.transforms as transforms
 from utility import center_crop
+import os
+import cv2
 
 import configparser
 conf = configparser.ConfigParser()
@@ -204,8 +206,11 @@ class dataloader_shading(Dataset):
                  manual_seed = 1234,
                  shuffle = True,
                 ):
-        self.dataset_dir = "/media/hao/DATA/ShadingData/data1006/"
-        self.num = 2273
+        self.depth_gt_dir = "/home/zhangtianyi/ShareFolder/data/hmd_masked/train/complete_depth/"
+        self.src_img_dir = "/home/zhangtianyi/ShareFolder/data/hmd_masked/train/predict_hmr_result/"
+        self.src_img_list = os.listdir(self.src_img_dir)
+        self.depth_gt_list = os.listdir(self.depth_gt_dir)
+        self.num = len(self.src_img_list)
             
         # make random seed
         if manual_seed is None:
@@ -224,30 +229,32 @@ class dataloader_shading(Dataset):
         tuple_id = self.id_list[index]
         
         # get source image
-        src_img = np.array(PIL.Image.open(self.dataset_dir + 
-                                          "inputC_%04d.jpg" % tuple_id))
+        src_img = np.array(PIL.Image.open(self.src_img_dir + self.src_img_list[tuple_id] 
+        + "/std_img.jpg"))
+        src_img = cv2.resize(src_img, dsize=(448, 448))
         src_img = np.rollaxis(src_img, 2, 0) / 256.0
         
+        # src_img = np.resize(src_img, (3, 488, 488))
+        # print(src_img.shape)
+        
         # get gt depth
-        f_dgt = open(self.dataset_dir + 'gtD_%04d.bin' % tuple_id, "rb")
-        depth_gt = np.resize(np.fromfile(f_dgt, dtype=np.float32), 
-                             (448, 448)).transpose()
+        depth_gt = np.load(self.depth_gt_dir + self.depth_gt_list[tuple_id])
         
-        # get smooth depth
-        f_dsm = open(self.dataset_dir + 'smoothD_%04d.bin' % tuple_id, "rb")
-        depth_sm = np.resize(np.fromfile(f_dsm, dtype=np.float32), 
-                             (448, 448)).transpose()
+        # # get smooth depth
+        # f_dsm = open(self.dataset_dir + 'smoothD_%04d.bin' % tuple_id, "rb")
+        # depth_sm = np.resize(np.fromfile(f_dsm, dtype=np.float32), 
+        #                      (448, 448)).transpose()
         
-        # compute depth difference
-        depth_diff = depth_gt - depth_sm
-        depth_diff = depth_diff * 10
-        depth_diff = np.expand_dims(depth_diff, 0)
+        # # compute depth difference
+        # depth_diff = depth_gt - depth_sm
+        # depth_diff = depth_diff * 10
+        # depth_diff = np.expand_dims(depth_diff, 0)
         
-        # get mask
-        mask = np.zeros(depth_diff.shape)
-        mask[depth_diff!=0] = 1
+        # # get mask
+        # mask = np.zeros(depth_diff.shape)
+        # mask[depth_diff!=0] = 1
         
-        return (src_img, depth_diff, mask)
+        return (src_img, depth_gt)
                 
 #==============================================================================
 # data loader for efficient predicting test

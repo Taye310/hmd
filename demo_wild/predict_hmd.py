@@ -288,9 +288,9 @@ pred_depth = pred_depth * final_mask
 
 # print('pred_depth shape:')
 # print(pred_depth.shape)
-from matplotlib import pyplot as plt
-plt.imshow(final_mask)
-plt.show()
+# from matplotlib import pyplot as plt
+# plt.imshow(final_mask)
+# plt.show()
 
 # project mesh to depth and merge with depth difference
 proj_depth, visi_map = rd.render_depth(subdiv_mesh, require_visi = True) # mesh to depth map//proj_depth/visi_map shape = (448,448)
