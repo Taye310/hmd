@@ -222,13 +222,17 @@ proj_sil = my_renderer.silhouette(verts = mesh.points())
 proj_sil_l = cv2.resize(proj_sil, dsize=(448, 448))
 proj_sil_l[proj_sil_l<0.5] = 0
 proj_sil_l[proj_sil_l>=0.5] = 1
-
+# img = PIL.Image.fromarray(proj_sil_l)
+# img.show()
 # load data
 src_img_l = cv2.resize(src_img, dsize=(448, 448))
+# img = PIL.Image.fromarray(src_img_l)
+# img.show()
 input_arr = np.rollaxis(src_img_l, 2, 0)
 input_arr = np.expand_dims(input_arr, 0)
-input_arr = torch.tensor(input_arr).float().to(device)
 input_arr = input_arr/255.0
+input_arr = torch.tensor(input_arr).float().to(device)
+
 
 # # src is the rgb std image, sil is sil
 # from matplotlib import pyplot as plt
@@ -243,8 +247,11 @@ proj_sil_l = torch.tensor(proj_sil_l)
 proj_sil_l = proj_sil_l.float().to(device)
 
 # predict
+print("input_arr:", input_arr.shape)
+print("proj_sil_l:", proj_sil_l.shape)
 pred = net_shading(input_arr, proj_sil_l)
 pred_depth = np.array(pred.data[0][0].cpu())
+print("pred.data[0][0]:", pred.data[0][0].shape)
 from matplotlib import pyplot as plt ### have not tried yet, should be the predict dm, using to make gt depth map
 plt.imshow(pred_depth)
 plt.show()

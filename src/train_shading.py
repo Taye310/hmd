@@ -8,6 +8,9 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.utils.data
 import torch.nn.functional
+# from torch.utils.tensorboard import SummaryWriter
+# writer = SummaryWriter('../log/log1')
+
 import torchvision.transforms as transforms
 import numpy as np
 import PIL.Image
@@ -26,7 +29,7 @@ parser.add_argument('--sil', type = bool,
                     help = 'switch to silhouette version', default = False)
 parser.add_argument('--workers', type = int, 
                     help = 'number of data loading workers', default = 20)
-parser.add_argument('--batchSize', type = int, default = 20, 
+parser.add_argument('--batchSize', type = int, default = 16, 
                     help = 'input batch size')
 parser.add_argument('--imageSize', type = int, default = [224, 224], 
                     help = 'the height / width of the input image to network')
@@ -34,7 +37,7 @@ parser.add_argument('--nepoch', type = int, default = 1,
                     help = 'number of epochs to train for')
 parser.add_argument('--niter', type = int, default = 20000, 
                     help = 'number of iterations to train for')
-parser.add_argument('--lr', type = float, default = 0.00001, 
+parser.add_argument('--lr', type = float, default = 0.0001, 
                     help = 'learning rate, default=0.0001')
 parser.add_argument('--beta1', type = float, default = 0.9, 
                     help = 'beta1 for adam. default=0.9')
@@ -46,7 +49,7 @@ parser.add_argument('--finetune', default = '',
                     help = "path to net (to continue training)")
 parser.add_argument('--outf', default = '../model/snapshots/', 
                     help = 'folder to output images and model checkpoints')
-parser.add_argument('--manualSeed', type = int, default = 1234, 
+parser.add_argument('--manualSeed', type = int, default = 2345, 
                     help = 'manual seed')
 parser.add_argument('--testInterval', type = int, default = 5000, 
                     help = 'test interval')
@@ -54,7 +57,7 @@ parser.add_argument('--prvInterval', type = int, default = 1,
                     help = 'preview interval')
 parser.add_argument('--shlInterval', type = int, default = 1, 
                     help = 'show loss interval')
-parser.add_argument('--saveModelIter', type = int, default = 20000, 
+parser.add_argument('--saveModelIter', type = int, default = 1150, 
                     help = 'show loss interval')
 opt = parser.parse_args()
 print(opt)
@@ -110,6 +113,11 @@ net_shading = shading_net(
 if opt.finetune != '':
     net_shading.load_state_dict(torch.load(opt.finetune))
 
+
+def customLoss():
+    pass
+
+
 # define the optimizer and criterion
 optimizer = optim.Adam(net_shading.parameters(), lr=opt.lr, betas=(opt.beta1, 0.99), weight_decay=0.0005)
 criterion = nn.MSELoss()
@@ -128,13 +136,15 @@ for epoch in range(opt.nepoch):
         # mask = data[2].to(device).float()
         src_img = data[0].to(device).float()
         depth_gt = data[1].to(device).float()
-        mask = depth_gt
-        mask[mask == 0] = 0
-        mask[mask != 0] = 1
+        mask = data[2].to(device).float()
+        # print(data[1].to(device).float()[0][0][250]) # tensor
         
         # forward and backward propagate
         optimizer.zero_grad()
         pred_para = net_shading(src_img, mask)
+        # print("src_img",src_img.shape,src_img[0][0][200])
+        # print("pred_para",pred_para.shape,pred_para[0][0][200])
+        # print("depth_gt:",depth_gt.shape,depth_gt[0][0][200])
         # pred_para[depth_gt==0] = 0 # mask out zero pixel
         loss = criterion(pred_para, depth_gt)
 
@@ -152,11 +162,13 @@ for epoch in range(opt.nepoch):
         if (epoch == opt.nepoch-1) and (i == opt.niter-1):
             torch.save(net_shading.state_dict(), 
                        "%spretrained_shading.pth" % opt.outf)
+            print("save model!!!!")
             break
 
         # save parameters for each epoch
         if i%opt.saveModelIter == 0:
             torch.save(net_shading.state_dict(), 
                        "%sshading_epoch_%d_%d.pth" % (opt.outf, epoch, i))
+            print("save model!!!!!")
     
 print("Done, final model saved to %spretrained_shading.pth" % opt.outf)

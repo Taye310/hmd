@@ -209,7 +209,7 @@ class dataloader_shading(Dataset):
         self.depth_gt_dir = "/home/zhangtianyi/ShareFolder/data/hmd_masked/train/complete_depth/"
         self.src_img_dir = "/home/zhangtianyi/ShareFolder/data/hmd_masked/train/predict_hmr_result/"
         self.src_img_list = os.listdir(self.src_img_dir)
-        self.depth_gt_list = os.listdir(self.depth_gt_dir)
+        # self.depth_gt_list = os.listdir(self.depth_gt_dir)
         self.num = len(self.src_img_list)
             
         # make random seed
@@ -232,13 +232,19 @@ class dataloader_shading(Dataset):
         src_img = np.array(PIL.Image.open(self.src_img_dir + self.src_img_list[tuple_id] 
         + "/std_img.jpg"))
         src_img = cv2.resize(src_img, dsize=(448, 448))
-        src_img = np.rollaxis(src_img, 2, 0) / 256.0
+        src_img = np.rollaxis(src_img, 2, 0) / 255.0
         
         # src_img = np.resize(src_img, (3, 488, 488))
         # print(src_img.shape)
+        # print("src_img_name:",self.src_img_dir + self.src_img_list[tuple_id] + "/std_img.jpg",
+        # "depth_gt_name:",self.depth_gt_dir + self.src_img_list[tuple_id] + "_depth_mask.npy")
         
         # get gt depth
-        depth_gt = np.load(self.depth_gt_dir + self.depth_gt_list[tuple_id])
+        depth_gt = np.load(self.depth_gt_dir + self.src_img_list[tuple_id] + "_depth_mask.npy")
+        # depth_gt = depth_gt
+        # print("depth_gt path:",self.depth_gt_dir + self.depth_gt_list[tuple_id])
+        # print(depth_gt[250])
+        depth_gt = np.expand_dims(depth_gt, 0)
         
         # # get smooth depth
         # f_dsm = open(self.dataset_dir + 'smoothD_%04d.bin' % tuple_id, "rb")
@@ -253,8 +259,11 @@ class dataloader_shading(Dataset):
         # # get mask
         # mask = np.zeros(depth_diff.shape)
         # mask[depth_diff!=0] = 1
+        temp = depth_gt
+        mask = np.zeros(temp.shape)
+        mask[temp!=0] = 1
         
-        return (src_img, depth_gt)
+        return (src_img, depth_gt, mask)
                 
 #==============================================================================
 # data loader for efficient predicting test
