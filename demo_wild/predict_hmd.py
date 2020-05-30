@@ -35,7 +35,7 @@ parser.add_argument('--outf', default = '',
                     help = 'output folder (str, default is image name)')
 parser.add_argument('--step', type = str2bool, default = True, 
                     help = 'save step results or not (True/False, default: True)')
-parser.add_argument('--mesh', type = str2bool, default = False, 
+parser.add_argument('--mesh', type = str2bool, default = True, 
                     help = 'save mesh or not (True/False, default: False)')
 parser.add_argument('--gif', type = str2bool, default = False, 
                     help = 'make gif or not (True/False, default: False)')
@@ -251,7 +251,10 @@ print("input_arr:", input_arr.shape)
 print("proj_sil_l:", proj_sil_l.shape)
 pred = net_shading(input_arr, proj_sil_l)
 pred_depth = np.array(pred.data[0][0].cpu())
-print("pred.data[0][0]:", pred.data[0][0].shape)
+# name = opt.outf.split('/')[-2]
+# pred_depth = np.load('/home/zhangtianyi/ShareFolder/data/hmd_masked/test/shift-net_depth_result/' + name + '.npy')
+# pred_depth = pred_depth * 5.0
+print("pred_depth:", pred_depth.shape)
 from matplotlib import pyplot as plt ### have not tried yet, should be the predict dm, using to make gt depth map
 plt.imshow(pred_depth)
 plt.show()

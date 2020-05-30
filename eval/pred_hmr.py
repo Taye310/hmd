@@ -27,7 +27,7 @@ faces = np.load("../predef/smpl_faces.npy")
 
 tr = trange(data_num, desc='Bar desc', leave=True)
 for i in tr:
-    src_img = np.array(PIL.Image.open("./eval_data/%s_set/input/%03d_img.png" % \
+    src_img = np.array(PIL.Image.open("./eval_data/%s_set/input_masked/%03d_img.png" % \
                                       (opt.set, i)))[:,:,:3]
     verts, cam, proc_para, std_img = hmr_pred.predict(src_img)
     

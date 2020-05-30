@@ -18,7 +18,7 @@ parser.add_argument('--tgt', type = str, required = True,
 opt = parser.parse_args()
 
 set_name = "recon"
-assert opt.tgt in ["j", "a", "s", "hmr"], \
+assert opt.tgt in ["j", "a", "s", "hmr", "s_inpainted"], \
        "tgt must be in in [j, a, s, hmr]"
 
 data_num = int(opt.num)

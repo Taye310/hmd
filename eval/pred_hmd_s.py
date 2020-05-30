@@ -11,6 +11,7 @@ from utility import CamPara
 from utility import make_trimesh
 from utility import flatten_naval
 from utility import smpl_detoe
+from matplotlib import pyplot as plt
 
 
 # parse arguments
@@ -51,7 +52,7 @@ for test_num in tr:
     proj_sil_l[proj_sil_l>=0.5] = 1
     
     # load data
-    src_img = np.array(PIL.Image.open("./eval_data/%s_set/input/%03d_img.png"%\
+    src_img = np.array(PIL.Image.open("./eval_data/%s_set/input_img/%03d_img.png"%\
                                       (opt.set, test_num)))
     src_img_l = cv2.resize(src_img, dsize=(448, 448))
     input_arr = np.rollaxis(src_img_l, 2, 0)
@@ -67,6 +68,9 @@ for test_num in tr:
     # predict
     pred = net_shading(input_arr, proj_sil_l)
     pred_depth = np.array(pred.data.cpu()[0][0])
+    # pred_depth = np.load('/home/zhangtianyi/github/hmd/eval/eval_data/syn_set/pred_depth/' + '%03d_img.npy'%\
+    #                     (test_num))
+    # pred_depth = pred_depth*5.0
 
     #show_img_arr(src_img)
     mesh = flatten_naval(mesh)
@@ -116,7 +120,9 @@ for test_num in tr:
     
     pred_depth = pred_depth * 0.001
     pred_depth = pred_depth * final_mask
-    
+
+    # plt.imshow(pred_depth)
+    # plt.show()
     
     # project mesh to depth and merge with depth difference
     proj_depth, visi_map = rd.render_depth(subdiv_mesh, require_visi = True)

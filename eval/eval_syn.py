@@ -19,7 +19,7 @@ opt = parser.parse_args()
 
 set_name = "syn"
 err_scale = 2.3
-assert opt.tgt in ["j", "a", "s", "hmr"], \
+assert opt.tgt in ["j", "a", "s", "hmr", "s_inpainted"], \
        "tgt must be in in [j, a, s, hmr]"
 
 data_num = int(opt.num)

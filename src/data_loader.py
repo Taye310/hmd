@@ -207,7 +207,7 @@ class dataloader_shading(Dataset):
                  shuffle = True,
                 ):
         self.depth_gt_dir = "/home/zhangtianyi/ShareFolder/data/hmd_masked/train/complete_depth/"
-        self.src_img_dir = "/home/zhangtianyi/ShareFolder/data/hmd_masked/train/predict_hmr_result/"
+        self.src_img_dir = "/home/zhangtianyi/ShareFolder/data/hmd_2/train/img/"
         self.src_img_list = os.listdir(self.src_img_dir)
         # self.depth_gt_list = os.listdir(self.depth_gt_dir)
         self.num = len(self.src_img_list)
@@ -229,8 +229,7 @@ class dataloader_shading(Dataset):
         tuple_id = self.id_list[index]
         
         # get source image
-        src_img = np.array(PIL.Image.open(self.src_img_dir + self.src_img_list[tuple_id] 
-        + "/std_img.jpg"))
+        src_img = np.array(PIL.Image.open(self.src_img_dir + self.src_img_list[tuple_id]))
         src_img = cv2.resize(src_img, dsize=(448, 448))
         src_img = np.rollaxis(src_img, 2, 0) / 255.0
         
@@ -240,7 +239,7 @@ class dataloader_shading(Dataset):
         # "depth_gt_name:",self.depth_gt_dir + self.src_img_list[tuple_id] + "_depth_mask.npy")
         
         # get gt depth
-        depth_gt = np.load(self.depth_gt_dir + self.src_img_list[tuple_id] + "_depth_mask.npy")
+        depth_gt = np.load(self.depth_gt_dir + self.src_img_list[tuple_id][:-4] + "_depth_mask.npy")
         # depth_gt = depth_gt
         # print("depth_gt path:",self.depth_gt_dir + self.depth_gt_list[tuple_id])
         # print(depth_gt[250])

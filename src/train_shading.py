@@ -120,7 +120,7 @@ def customLoss():
 
 # define the optimizer and criterion
 optimizer = optim.Adam(net_shading.parameters(), lr=opt.lr, betas=(opt.beta1, 0.99), weight_decay=0.0005)
-criterion = nn.MSELoss()
+criterion = nn.MSEvLoss()
 
 # prepare for loss saving
 batch_num = dataloader.dataset.num/dataloader.batch_size

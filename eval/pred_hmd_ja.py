@@ -49,7 +49,7 @@ achr_num = len(achr_id)
 tr = trange(data_num, desc='Bar desc', leave=True)
 for test_ind in tr:
 
-    src_img = np.array(PIL.Image.open("./eval_data/%s_set/input/%03d_img.png" \
+    src_img = np.array(PIL.Image.open("./eval_data/%s_set/input_masked/%03d_img.png" \
                                       % (opt.set, test_ind)))
 
     #verts, cam, proc_para, std_img = hmr_pred.predict(src_img)
